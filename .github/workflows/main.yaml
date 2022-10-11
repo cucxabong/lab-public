@@ -16,4 +16,5 @@ jobs:
         run: |
           echo "${{ matrix.version }}"
           exit 1
+
         shell: bash

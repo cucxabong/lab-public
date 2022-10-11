@@ -1,0 +1,14 @@
+
+name: Placeholder Workflow
+
+on:
+  workflow_dispatch: {}
+jobs:
+  FeaturePreviewBuild:
+    name: Simple Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: run script
+        run: |
+          printenv
+        shell: bash

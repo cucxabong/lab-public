@@ -5,16 +5,42 @@ on:
   workflow_dispatch: {}
   pull_request: {}
 jobs:
-  FeaturePreviewBuild:
+  simple-job:
     strategy:
       matrix:
-        version: [10, 12, 14]
-    name: Simple Job
-    runs-on: ubuntu-latest
+        include:
+          - name: should-fail
+            code: 0
+          - name: should-success
+            code: 0
+    runs-on: ubuntu-20.04
     steps:
       - name: run script
         run: |
-          echo "${{ matrix.version }}"
-          exit 1
-
+          echo "Running job: '${{ matrix.name }}'"
+          exit ${{ matrix.code }}
         shell: bash
+  after-matrix:
+    needs: simple-job
+    runs-on: ubuntu-20.04
+    if: success()
+    outputs:
+      success: ${{ steps.setoutput.outputs.success }}
+    steps:
+      - id: setoutput
+        run: echo "::set-output name=success::true"
+  combine:
+    runs-on: ubuntu-20.04
+    if: always()
+    needs: [ simple-job, after-matrix ]
+    steps:
+      - run: |
+          passed="${{ needs.after-matrix.outputs.success }}"
+          if [[ $passed == "true" ]]
+          then
+            echo "Shards passed"
+            exit 0
+          else
+            echo "Shareds failed"
+            exit 1
+          fi

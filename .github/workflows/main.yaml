@@ -3,12 +3,17 @@ name: Placeholder Workflow
 
 on:
   workflow_dispatch: {}
+  pull_request: {}
 jobs:
   FeaturePreviewBuild:
+    strategy:
+      matrix:
+        version: [10, 12, 14]
     name: Simple Job
     runs-on: ubuntu-latest
     steps:
       - name: run script
         run: |
-          printenv
+          echo "${{ matrix.version }}"
+          exit 1
         shell: bash
